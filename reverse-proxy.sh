@@ -9,7 +9,7 @@ source "$DIR/config"
 
 hash curl 2>/dev/null || { echo >&2 "please install curl"; exit 1; }
 hash jq 2>/dev/null || { echo >&2 "please install jq"; exit 1; }
-[ -f "config" ] || { echo >&2 "please create config file"; exit 1; }
+[ -f "$DIR/config" ] || { echo >&2 "please create config file"; exit 1; }
 [ -z "$HOST" ] && { echo >&2 "please set HOST variable in config file"; exit 1; }
 
 # an "instance" corresponds to a dedicated port combination.
@@ -44,11 +44,11 @@ chmod g+w ${FILENAME}
 
 echo "=== adding reverse proxy $NAME (https://$HOST:$FROM -> localhost:$TO)"
 
-jq -n --arg name "$NAME" --arg host "${HOST}" --arg from ":${FROM}" --arg to "localhost:${TO}" --arg hostport "${HOST}:${FROM}" -f jq/caddy-revproxy-template.jq  | curl -s -X POST "$CONFIG/apps/http/servers/$NAME" -H "Content-Type: application/json" -d @-
+jq -n --arg name "$NAME" --arg host "${HOST}" --arg from ":${FROM}" --arg to "localhost:${TO}" --arg hostport "${HOST}:${FROM}" -f $DIR/jq/caddy-revproxy-template.jq  | curl -s -X POST "$CONFIG/apps/http/servers/$NAME" -H "Content-Type: application/json" -d @-
 
 echo === adding access log $NAME
 
-jq -n --arg name "${NAME}" --arg log "http.log.access.${NAME}" --arg filename ${FILENAME} -f jq/caddy-logging-template.jq | curl -s -X POST "$CONFIG/logging/logs/$NAME" -H "Content-Type: application/json" -d @-
+jq -n --arg name "${NAME}" --arg log "http.log.access.${NAME}" --arg filename ${FILENAME} -f $DIR/jq/caddy-logging-template.jq | curl -s -X POST "$CONFIG/logging/logs/$NAME" -H "Content-Type: application/json" -d @-
 
 tail -f ${FILENAME}
 
