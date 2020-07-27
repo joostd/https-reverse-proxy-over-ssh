@@ -11,8 +11,8 @@ It functions similar to popular services like
 
 The difference with these services:
 - this proxy runs on a server of your own, adding privacy and control over domain names and port numbers.
-- ...
- 
+- this proxy is typically used by members of a dev team (I've created this to easily test the [tiqr](tiqr.org) app).
+
 HTTPS server certificates are generated automatically using Let's Encrypt.
 
 In a nutshell, all this script does is
@@ -23,7 +23,7 @@ In a nutshell, all this script does is
 
 Similar to:
 
-    ssh proxy.example.org -l ubuntu -R 1234:localhost:8080 caddy reverse-proxy --from https://proxy.aai.surfn0www0:4443 --to localhost:1234
+    ssh proxy.example.org -l ubuntu -R 1234:localhost:8080 caddy reverse-proxy --from https://proxy.example.org:4443 --to localhost:1234
 
 
 # Install
@@ -59,7 +59,7 @@ Then run the ansible playbook using:
 
     ansible-playbook -i inventory ansible/playbook.yml
 
-If needed, you can specify the SSH key t ouse with  something like `--key-file "~/.ssh/rsa_id.pem"`
+If needed, you can specify the SSH key to use with  something like `--key-file "~/.ssh/rsa_id.pem"`
 
 Add user `ubuntu` to group `caddy`:
 
@@ -79,6 +79,19 @@ Or using PHP's builtin web server:
 Then, open a tunnel to the proxy with the necessary plumbing:
 
     ssh proxy.example.org -l ubuntu -i ~/.ssh/id_rsa.pem -R 8001:localhost:8001 -t ./reverse-proxy.sh 1
+
+The script argument is simply an offset to the base port numbers used (4000 on the proxy, 8000 on the client).
+
+After the proxy server has starter, the script continues to display proxy access logs.
+You can press ^C to terminate the proxy (and the SSH connection if you don't use terminal mode).
+
+## Disabling shell accounts
+
+A shell account is not needed to run the proxy, if you restrict users to using SSH command mode.
+This can be done through SSH configuration in a user's `authorized_keys` file.
+You can also choose to embed the reverse-proxy script in issued SSH certificates.
+That way you can grant access to the reverse proxy service by distributing SSH certificates.
+
 
 # Implementation
 
