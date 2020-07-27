@@ -3,13 +3,18 @@
 # dynamically add reverse proxy 
 # caddy reverse-proxy --from https://proxy.example.org:$from --to :$to
 
-source config
+DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
+source "$DIR/config"
 
 hash curl 2>/dev/null || { echo >&2 "please install curl"; exit 1; }
 hash jq 2>/dev/null || { echo >&2 "please install jq"; exit 1; }
 [ -f "config" ] || { echo >&2 "please create config file"; exit 1; }
 [ -z "$HOST" ] && { echo >&2 "please set HOST variable in config file"; exit 1; }
 
+# an "instance" corresponds to a dedicated port combination.
+# typically, different users use different instance numbers
+# TODO: instance must be numeric
 INSTANCE=$1
 
 FROM=$((4000+$INSTANCE))
