@@ -4,8 +4,8 @@
   remote_user: ubuntu
 
   vars:
-    base: /opt/x509enrol
-    docroot: "{{ base }}/www"
+    user: ubuntu
+    proxydir: "/home/{{ user }}/proxy"
 
   tasks:
 
@@ -24,7 +24,7 @@
     become: yes
 
   - name: checkout repo
-    git: repo=https://github.com/joostd/https-reverse-proxy-over-ssh.git version=master dest=/home/ubuntu/proxy
+    git: repo=https://github.com/joostd/https-reverse-proxy-over-ssh.git version=master dest={{ proxydir }}
 
   - name: create caddy config file
     template: src=Caddyfile dest=/etc/caddy/Caddyfile
@@ -34,6 +34,13 @@
 
   - name: Start caddy Service
     service: name=caddy enabled=true
+    become: yes
+
+  - name: create reverse proxy config file
+    template: src=config dest={{ proxydir }}
+
+  - name: Add user to caddy group
+    user: name={{ user }} groups=caddy append=yes
     become: yes
 
   handlers:

@@ -1,0 +1,9 @@
+proxy.example.org
+
+root * /usr/share/caddy
+
+file_server
+
+log {
+    output discard
+}

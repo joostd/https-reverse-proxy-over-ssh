@@ -30,7 +30,6 @@ Similar to:
 
 This reverse proxy can be deployed on any server, assuming ubuntu:
 
-
 Install [jq](https://stedolan.github.io/jq/):
 
       apt install jq
@@ -41,9 +40,17 @@ Install [Caddy](https://caddyserver.com/docs/download):
     sudo apt update
     sudo apt install caddy
 
-Install Caddy config
+Install Caddy config file:
 
-    sudo cp Caddyfile /etc/caddy/
+    sudo cp Caddyfile.example /etc/caddy/Caddyfile
+
+Replace the first line in that file with the fully qualified domain name of your reverse proxy.
+
+Create the reverse proxy config file:
+
+    cp config.example config
+
+Replace the HOST variable in that file with the fully qualified domain name of your reverse proxy.
 
 ## Install using ansible
 
@@ -53,6 +60,10 @@ Then run the ansible playbook using:
     ansible-playbook -i inventory ansible/playbook.yml
 
 If needed, you can specify the SSH key t ouse with  something like `--key-file "~/.ssh/rsa_id.pem"`
+
+Add user `ubuntu` to group `caddy`:
+
+    adduser ubuntu caddy
 
 # Use
 
