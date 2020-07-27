@@ -1,0 +1,43 @@
+# Ansible playbook
+---
+- hosts: default
+  remote_user: ubuntu
+
+  vars:
+    base: /opt/x509enrol
+    docroot: "{{ base }}/www"
+
+  tasks:
+
+  - name: add caddy repo
+    apt_repository:
+      repo: "deb [trusted=yes] https://apt.fury.io/caddy/ /"
+      state: present
+      filename: caddy-fury.list
+    become: yes
+
+  - name: install dependencies
+    apt:
+      update_cache: yes
+      state: latest
+      name: ['git', 'jq', 'caddy']
+    become: yes
+
+  - name: checkout repo
+    git: repo=https://github.com/joostd/https-reverse-proxy-over-ssh.git version=master dest=/home/ubuntu/proxy
+
+  - name: create caddy config file
+    template: src=Caddyfile dest=/etc/caddy/Caddyfile
+    become: yes
+    notify:
+    - restart caddy
+
+  - name: Start caddy Service
+    service: name=caddy enabled=true
+    become: yes
+
+  handlers:
+
+  - name: restart caddy
+    service: name=caddy state=restarted
+    become: yes

@@ -1,0 +1,9 @@
+{{ inventory_hostname }}
+
+root * /usr/share/caddy
+
+file_server
+
+log {
+    output discard
+}
